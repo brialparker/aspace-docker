@@ -1,0 +1,59 @@
+version: '2'
+services:
+  app:
+    build:
+      context: ./archivesspace
+    image: docker.lib.umd.edu/aspace/aspace_app 
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    depends_on:
+      - db
+      - solr
+    environment:
+      APPCONFIG_DB_URL: 'jdbc:mysql://db:3306/archivesspace?useUnicode=true&characterEncoding=UTF-8&user=as&password=as123'
+      # disable the embedded solr
+      APPCONFIG_ENABLE_SOLR: 'false'
+      APPCONFIG_SOLR_URL: 'http://solr:8983/solr/archivesspace'
+      APPCONFIG_FRONTEND_PROXY_URL: 'https://aspace.local'
+      APPCONFIG_PUBLIC_PROXY_URL: 'https://archives.local'
+    volumes:
+        - aspace:/opt/archivesspace/data 
+  db:
+    image: mysql:5.7
+    command: --character-set-server=utf8 --collation-server=utf8_unicode_ci --innodb_buffer_pool_size=2G --innodb_buffer_pool_instances=2
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql:/var/lib/mysql 
+    environment:
+      MYSQL_ROOT_PASSWORD: "123456"
+      MYSQL_DATABASE: archivesspace
+      MYSQL_USER: as
+      MYSQL_PASSWORD: as123
+  solr:
+    build:
+      context: ./solr
+    command: solr-create -p 8983 -c archivesspace -d /archivesspace
+    ports:
+      - "8983:8983"
+  web:
+    image: nginx:1.13
+    environment:
+      ASPACE_STAFF: aspace.local
+      ASPACE_PUBLIC: archives.local
+    volumes: 
+      - ./proxy/aspace.template:/etc/nginx/conf.d/aspace.template
+      - ./proxy/includes:/etc/nginx/includes
+      - ./proxy/docker-startup.sh:/startup.sh 
+      - ./ssl/certs:/etc/ssl/certs
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - app
+    command: /bin/bash /startup.sh
+volumes:
+  mysql:
+  aspace:
+  plugins:
