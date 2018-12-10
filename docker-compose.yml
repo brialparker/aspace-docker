@@ -3,7 +3,7 @@ services:
   app:
     build:
       context: ./archivesspace
-    image: docker.lib.umd.edu/aspace/aspace_app 
+    image: docker.lib.umd.edu/aspace/aspace_app
     ports:
       - "8080:8080"
       - "8081:8081"
@@ -18,14 +18,14 @@ services:
       APPCONFIG_FRONTEND_PROXY_URL: 'https://aspace.local'
       APPCONFIG_PUBLIC_PROXY_URL: 'https://archives.local'
     volumes:
-        - aspace:/opt/archivesspace/data 
+        - aspace:/opt/archivesspace/data
   db:
     image: mysql:5.7
     command: --character-set-server=utf8 --collation-server=utf8_unicode_ci --innodb_buffer_pool_size=2G --innodb_buffer_pool_instances=2
     ports:
       - "3306:3306"
     volumes:
-      - mysql:/var/lib/mysql 
+      - mysql:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: "123456"
       MYSQL_DATABASE: archivesspace
@@ -42,10 +42,10 @@ services:
     environment:
       ASPACE_STAFF: aspace.local
       ASPACE_PUBLIC: archives.local
-    volumes: 
+    volumes:
       - ./proxy/aspace.template:/etc/nginx/conf.d/aspace.template
       - ./proxy/includes:/etc/nginx/includes
-      - ./proxy/docker-startup.sh:/startup.sh 
+      - ./proxy/docker-startup.sh:/startup.sh
       - ./ssl/certs:/etc/ssl/certs
     ports:
       - "80:80"
@@ -56,4 +56,4 @@ services:
 volumes:
   mysql:
   aspace:
-  plugins:
+
