@@ -1,6 +1,6 @@
 FROM openjdk:8-jre
 LABEL maintainer="lib-ssdr@umd.edu"
-ARG aspace_version=v2.5.1
+ARG aspace_version=v2.7.0
 
 ENV ARCHIVESSPACE_LOGS=/dev/null \
     ASPACE_VERSION=$aspace_version \
